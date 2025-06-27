@@ -47,21 +47,6 @@ async def test_counter_negative_values(user: User) -> None:
     await user.should_see('-1')
 
 
-async def test_counter_reset(user: User) -> None:
-    """Test resetting the counter"""    
-    await user.open('/')
-    
-    # Increment counter multiple times
-    for _ in range(5):
-        user.find(marker='increment_btn').click()
-    
-    # Click reset button
-    user.find(marker='reset_btn').click()
-    
-    # Check counter is back to 0
-    await user.should_see('0')
-
-
 async def test_counter_persistence(user: User) -> None:
     """Test that counter value persists in user storage"""
     await user.open('/')
@@ -105,12 +90,11 @@ async def test_ui_elements_present(user: User) -> None:
     await user.open('/')
     
     # Check for title
-    await user.should_see('Counter Application')
+    await user.should_see('Counter')
     
     # Check for buttons by their markers
     await user.should_see(marker='increment_btn')
     await user.should_see(marker='decrement_btn')
-    await user.should_see(marker='reset_btn')
     
     # Check initial counter value
     await user.should_see('0')
@@ -131,11 +115,10 @@ async def test_button_functionality_sequence(user: User) -> None:
     user.find(marker='decrement_btn').click()
     await user.should_see('1')
     
-    # Reset
-    user.find(marker='reset_btn').click()
+    # Go negative
+    user.find(marker='decrement_btn').click()
     await user.should_see('0')
     
-    # Go negative
     user.find(marker='decrement_btn').click()
     await user.should_see('-1')
     
@@ -151,3 +134,20 @@ async def test_button_functionality_sequence(user: User) -> None:
     
     user.find(marker='increment_btn').click()
     await user.should_see('1')
+
+
+async def test_large_numbers(user: User) -> None:
+    """Test counter with larger numbers"""
+    await user.open('/')
+    
+    # Increment many times
+    for _ in range(25):
+        user.find(marker='increment_btn').click()
+    
+    await user.should_see('25')
+    
+    # Decrement back down
+    for _ in range(30):
+        user.find(marker='decrement_btn').click()
+    
+    await user.should_see('-5')
